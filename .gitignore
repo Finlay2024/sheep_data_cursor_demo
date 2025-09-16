@@ -50,10 +50,13 @@ Thumbs.db
 
 # Output files
 output/
-*.csv
 *.xlsx
 *.html
 *.json
+
+# CSV files (except demo data)
+*.csv
+!Synthetic_Sheep_Data.csv
 
 # Logs
 *.log
