@@ -23,15 +23,7 @@ from sheepapp.core.models import AnalysisConfig
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Page configuration
-st.set_page_config(
-    page_title="Sheep Data Analysis",
-    page_icon="🐑",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Initialize session state
+# Initialize session state FIRST
 if 'data' not in st.session_state:
     st.session_state.data = None
 if 'cleaned_data' not in st.session_state:
@@ -42,6 +34,14 @@ if 'config' not in st.session_state:
     st.session_state.config = None
 if 'results' not in st.session_state:
     st.session_state.results = None
+
+# Page configuration
+st.set_page_config(
+    page_title="Sheep Data Analysis",
+    page_icon="🐑",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 def main():
     """Main application function."""
