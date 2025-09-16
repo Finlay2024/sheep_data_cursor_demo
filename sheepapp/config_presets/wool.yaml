@@ -1,0 +1,35 @@
+name: "wool"
+description: "Selection focused on wool production and quality traits"
+contemporary_group_window_days: 30
+normalization_method: "percentile"
+min_birth_weight: 2.0
+max_footrot_score: 4
+max_dag_score: 4
+min_weaning_weight: 20.0
+max_micron: 20.0
+bse_pass_required: true
+weights:
+  growth: 0.2
+  wool: 0.4
+  reproduction: 0.2
+  health: 0.15
+  temperament: 0.05
+trait_weights:
+  growth:
+    adg_100_200d: 0.3
+    adg_200_300d: 0.3
+    wt_200d_adj: 0.2
+    wt_300d_adj: 0.2
+  wool:
+    gfw: 0.5
+    micron: 0.3
+    staple_len: 0.2
+  reproduction:
+    weaning_rate: 0.6
+    lambs_weaned: 0.4
+  health:
+    fec_count: 0.4
+    footrot_score: 0.3
+    dag_score: 0.3
+  temperament:
+    temperament: 1.0

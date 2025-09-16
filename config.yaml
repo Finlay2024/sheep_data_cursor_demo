@@ -1,0 +1,63 @@
+# Default configuration for sheep data analysis
+app:
+  name: "Sheep Data Analysis"
+  version: "1.0.0"
+  demo_data: "Synthetic_Sheep_Data.csv"
+
+data:
+  required_fields:
+    - animal_id
+    - sex
+    - birth_date
+    - mgmt_group
+  date_format: "%Y-%m-%d"
+  contemporary_group_window_days: 30
+
+filters:
+  hard_filters:
+    min_birth_weight: 2.0
+    max_footrot_score: 4
+    max_dag_score: 4
+    min_weaning_weight: 20.0
+    max_micron: 25.0
+    bse_pass_required: true
+  
+  soft_filters:
+    min_200d_weight: 40.0
+    min_300d_weight: 50.0
+    min_weaning_rate: 0.5
+
+scoring:
+  normalization_method: "percentile"  # or "zscore"
+  weights:
+    growth: 0.3
+    wool: 0.2
+    reproduction: 0.2
+    health: 0.2
+    temperament: 0.1
+  
+  traits:
+    growth:
+      - adg_100_200d
+      - adg_200_300d
+      - wt_200d_adj
+      - wt_300d_adj
+    wool:
+      - gfw
+      - micron
+      - staple_len
+    reproduction:
+      - weaning_rate
+      - lambs_weaned
+    health:
+      - fec_count
+      - footrot_score
+      - dag_score
+    temperament:
+      - temperament
+
+reports:
+  output_dir: "output"
+  formats: ["csv", "xlsx", "html"]
+  include_charts: true
+  include_metadata: true

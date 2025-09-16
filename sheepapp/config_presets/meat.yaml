@@ -1,0 +1,35 @@
+name: "meat"
+description: "Selection focused on meat production and growth traits"
+contemporary_group_window_days: 30
+normalization_method: "percentile"
+min_birth_weight: 2.5
+max_footrot_score: 4
+max_dag_score: 4
+min_weaning_weight: 25.0
+max_micron: 30.0
+bse_pass_required: true
+weights:
+  growth: 0.5
+  wool: 0.1
+  reproduction: 0.2
+  health: 0.15
+  temperament: 0.05
+trait_weights:
+  growth:
+    adg_100_200d: 0.25
+    adg_200_300d: 0.35
+    wt_200d_adj: 0.2
+    wt_300d_adj: 0.2
+  wool:
+    gfw: 0.3
+    micron: 0.4
+    staple_len: 0.3
+  reproduction:
+    weaning_rate: 0.6
+    lambs_weaned: 0.4
+  health:
+    fec_count: 0.4
+    footrot_score: 0.3
+    dag_score: 0.3
+  temperament:
+    temperament: 1.0
