@@ -114,7 +114,7 @@ def data_upload_page():
                 
                 # Show preview
                 st.subheader("Data Preview")
-                st.dataframe(df.head(10), use_container_width=True)
+                st.dataframe(df.head(10), width='stretch')
                 
             except Exception as e:
                 st.error(f"❌ Error loading data: {str(e)}")
@@ -178,12 +178,12 @@ def data_quality_page():
     missing_df = missing_df[missing_df['Missing Count'] > 0].sort_values('Missing Count', ascending=False)
     
     if not missing_df.empty:
-        st.dataframe(missing_df, use_container_width=True)
+        st.dataframe(missing_df, width='stretch')
         
         # Missing data chart
         fig = px.bar(missing_df, x='Column', y='Missing %', 
                     title="Missing Data by Column")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
     else:
         st.success("✅ No missing data found!")
     
@@ -191,7 +191,7 @@ def data_quality_page():
     st.subheader("Data Types")
     dtype_df = df.dtypes.reset_index()
     dtype_df.columns = ['Column', 'Data Type']
-    st.dataframe(dtype_df, use_container_width=True)
+    st.dataframe(dtype_df, width='stretch')
     
     # Outlier detection
     st.subheader("Outlier Detection")
@@ -212,11 +212,11 @@ def data_quality_page():
             st.metric("Outliers Found", len(outliers))
             
             if len(outliers) > 0:
-                st.dataframe(outliers[['animal_id', outlier_col]], use_container_width=True)
+                st.dataframe(outliers[['animal_id', outlier_col]], width='stretch')
                 
                 # Outlier chart
                 fig = px.box(df, y=outlier_col, title=f"Outlier Analysis: {outlier_col}")
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
 
 def kpis_page():
     """KPI calculation and visualization page."""
@@ -274,7 +274,7 @@ def kpis_page():
         # Show KPI data
         if st.session_state.cleaned_data is not None:
             st.subheader("KPI Data")
-            st.dataframe(st.session_state.cleaned_data.head(20), use_container_width=True)
+            st.dataframe(st.session_state.cleaned_data.head(20), width='stretch')
             
             # Download button
             csv = st.session_state.cleaned_data.to_csv(index=False)
@@ -355,7 +355,7 @@ def selection_weights_page():
         st.write("**Weight Distribution:**")
         weight_df = pd.DataFrame(list(weights.items()), columns=['Category', 'Weight'])
         fig = px.pie(weight_df, values='Weight', names='Category', title="Category Weights")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
         
         # Filter settings
         st.subheader("Filter Settings")
@@ -432,12 +432,12 @@ def ram_results_page():
             available_cols = [col for col in display_cols if col in results['ranked_rams'].columns]
             display_df = results['ranked_rams'][available_cols].head(20)
             
-            st.dataframe(display_df, use_container_width=True)
+            st.dataframe(display_df, width='stretch')
             
             # Score distribution chart
             fig = px.histogram(results['ranked_rams'], x='composite_score', 
                               title="Composite Score Distribution")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
             
             # Category scores radar chart
             if len(results['ranked_rams']) > 0:
@@ -466,7 +466,7 @@ def ram_results_page():
                         title="Top Ram Performance Profile"
                     )
                     
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width='stretch')
             
             # Download button
             csv = results['ranked_rams'].to_csv(index=False)
@@ -511,7 +511,7 @@ def cull_recommendations_page():
         available_cols = [col for col in display_cols if col in cull_df.columns]
         display_df = cull_df[available_cols]
         
-        st.dataframe(display_df, use_container_width=True)
+        st.dataframe(display_df, width='stretch')
         
         # Cull reasons analysis
         if 'cull_reasons' in cull_df.columns:
@@ -528,9 +528,11 @@ def cull_recommendations_page():
                 
                 fig = px.bar(x=reason_counts.index, y=reason_counts.values,
                             title="Cull Reasons Distribution")
-                fig.update_xaxis(title="Reason")
-                fig.update_yaxis(title="Count")
-                st.plotly_chart(fig, use_container_width=True)
+                fig.update_layout(
+                    xaxis_title="Reason",
+                    yaxis_title="Count"
+                )
+                st.plotly_chart(fig, width='stretch')
         
         # Download button
         csv = cull_df.to_csv(index=False)
@@ -625,7 +627,7 @@ def reports_export_page():
     # Configuration used
     st.subheader("Configuration Used")
     config_df = pd.DataFrame(list(results['config_used'].items()), columns=['Parameter', 'Value'])
-    st.dataframe(config_df, use_container_width=True)
+    st.dataframe(config_df, width='stretch')
     
     # Clear session button
     st.subheader("Session Management")
