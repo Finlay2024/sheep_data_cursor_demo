@@ -52,12 +52,74 @@ def main():
     st.sidebar.title("Navigation")
     page = st.sidebar.selectbox(
         "Choose a page",
-        ["📤 Data Upload", "🔍 Data Quality", "📈 KPIs", "🧮 Selection Weights", 
+        ["🏠 Welcome & Instructions", "📤 Data Upload", "🔍 Data Quality", "📈 KPIs", "🧮 Selection Weights", 
          "🏅 Ram Results", "✂️ Cull Recommendations", "🧾 Reports & Export"]
     )
     
+    # Sidebar status indicators
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("📊 Analysis Status")
+    
+    # Data status
+    if st.session_state.data is not None:
+        st.sidebar.success("✅ Data Loaded")
+        st.sidebar.metric("Animals", len(st.session_state.data))
+    else:
+        st.sidebar.warning("⚠️ No Data")
+    
+    # KPI status
+    if st.session_state.kpis is not None:
+        st.sidebar.success("✅ KPIs Calculated")
+    else:
+        st.sidebar.info("ℹ️ KPIs Pending")
+    
+    # Config status
+    if st.session_state.config is not None:
+        st.sidebar.success("✅ Config Set")
+    else:
+        st.sidebar.info("ℹ️ Config Pending")
+    
+    # Results status
+    if st.session_state.results is not None:
+        st.sidebar.success("✅ Analysis Complete")
+        if 'ranked_rams' in st.session_state.results:
+            st.sidebar.metric("Rams Ranked", len(st.session_state.results['ranked_rams']))
+    else:
+        st.sidebar.info("ℹ️ Analysis Pending")
+    
+    # Quick actions
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("🚀 Quick Actions")
+    
+    if st.sidebar.button("🐑 Load Demo Data", use_container_width=True):
+        try:
+            df = load_demo_data()
+            st.session_state.data = df
+            st.sidebar.success("Demo data loaded!")
+            st.rerun()
+        except Exception as e:
+            st.sidebar.error(f"Error: {str(e)}")
+    
+    if st.sidebar.button("🗑️ Clear All Data", use_container_width=True):
+        for key in ['data', 'cleaned_data', 'kpis', 'config', 'results']:
+            st.session_state[key] = None
+        st.sidebar.success("Data cleared!")
+        st.rerun()
+    
+    # Help section
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("❓ Need Help?")
+    st.sidebar.markdown("""
+    - Start with **Welcome & Instructions**
+    - Use **Demo Data** to try the app
+    - Check **Data Quality** after upload
+    - Configure **Selection Weights** before analysis
+    """)
+    
     # Route to appropriate page
-    if page == "📤 Data Upload":
+    if page == "🏠 Welcome & Instructions":
+        welcome_page()
+    elif page == "📤 Data Upload":
         data_upload_page()
     elif page == "🔍 Data Quality":
         data_quality_page()
@@ -71,6 +133,161 @@ def main():
         cull_recommendations_page()
     elif page == "🧾 Reports & Export":
         reports_export_page()
+
+def welcome_page():
+    """Welcome page with instructions for first-time users."""
+    st.header("🏠 Welcome to Sheep Data Analysis")
+    
+    # Purpose statement
+    st.markdown("""
+    ## 🎯 Purpose
+    
+    This application helps sheep farmers and breeders make data-driven decisions about:
+    - **Ram Selection**: Rank rams based on multiple performance traits
+    - **Flock Management**: Identify animals for culling with clear, auditable reasons
+    - **Performance Analysis**: Calculate key performance indicators (KPIs) for your flock
+    - **Report Generation**: Create professional reports for decision-making and record-keeping
+    """)
+    
+    # How to use section
+    st.markdown("""
+    ## 🚀 How to Get Started
+    
+    Follow these steps to analyze your sheep data:
+    """)
+    
+    # Step-by-step instructions
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        ### Step 1: 📤 Upload Your Data
+        - Go to the **Data Upload** page
+        - Upload a CSV, Excel, or Parquet file with your sheep data
+        - Or click **"Use Demo Dataset"** to try the app with sample data
+        - Required columns: `animal_id`, `sex`, `birth_date`, `mgmt_group`
+        """)
+        
+        st.markdown("""
+        ### Step 2: 🔍 Check Data Quality
+        - Review data completeness and identify missing values
+        - Check for outliers and data inconsistencies
+        - Ensure all required fields are present
+        """)
+        
+        st.markdown("""
+        ### Step 3: 📈 Calculate KPIs
+        - Click **"Calculate KPIs"** to process your data
+        - Review available metrics and their statistics
+        - Download KPI data if needed
+        """)
+    
+    with col2:
+        st.markdown("""
+        ### Step 4: 🧮 Configure Selection Weights
+        - Choose a preset configuration (Balanced, Meat, Wool, Worm)
+        - Or customize weights for different trait categories:
+          - **Growth**: Birth weight, weaning weight, growth rates
+          - **Wool**: Fleece weight, micron, staple length
+          - **Reproduction**: Pregnancy rates, lambing performance
+          - **Health**: Worm resistance, footrot, dag scores
+          - **Temperament**: Handling ease and behavior
+        """)
+        
+        st.markdown("""
+        ### Step 5: 🏅 View Ram Results
+        - Click **"Run Analysis"** to rank your rams
+        - Review composite scores and category breakdowns
+        - Download ranked results
+        """)
+        
+        st.markdown("""
+        ### Step 6: ✂️ Review Cull Recommendations
+        - See which animals are recommended for culling
+        - Review reasons for each recommendation
+        - Download cull recommendations
+        """)
+    
+    # Data requirements
+    st.markdown("""
+    ## 📋 Data Requirements
+    
+    Your data file should include these columns:
+    """)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("""
+        **Required:**
+        - `animal_id`: Unique identifier
+        - `sex`: Ewe, Ram, or Wether
+        - `birth_date`: Date of birth
+        - `mgmt_group`: Management group/mob
+        """)
+    
+    with col2:
+        st.markdown("""
+        **Growth Traits:**
+        - `wt_birth`: Birth weight (kg)
+        - `wt_100d`: 100-day weight (kg)
+        - `wt_wean`: Weaning weight (kg)
+        - `wt_200d`: 200-day weight (kg)
+        - `wt_300d`: 300-day weight (kg)
+        """)
+    
+    with col3:
+        st.markdown("""
+        **Other Traits:**
+        - `preg_scan`: Pregnancy scan (0/1)
+        - `lambs_born`: Number of lambs born
+        - `lambs_weaned`: Number of lambs weaned
+        - `fec_count`: Faecal egg count
+        - `footrot_score`: Footrot score (0-5)
+        - `dag_score`: Dag score (0-5)
+        - `gfw`: Greasy fleece weight (kg)
+        - `micron`: Wool micron
+        - `staple_len`: Staple length (mm)
+        - `temperament`: Temperament score (1-5)
+        """)
+    
+    # Demo data info
+    st.markdown("""
+    ## 🐑 Demo Data
+    
+    If you don't have your own data yet, you can use the included demo dataset:
+    - 30 synthetic sheep records
+    - Mix of ewes and rams
+    - Complete trait data for all categories
+    - Realistic performance values
+    
+    Click **"Use Demo Dataset"** on the Data Upload page to get started!
+    """)
+    
+    # Tips and best practices
+    st.markdown("""
+    ## 💡 Tips for Best Results
+    
+    - **Data Quality**: Ensure birth dates are accurate and weights are realistic
+    - **Contemporary Groups**: Animals in the same management group will be compared fairly
+    - **Missing Data**: The app handles missing values, but more complete data gives better results
+    - **Weight Configuration**: Start with a balanced preset and adjust based on your breeding goals
+    - **Regular Updates**: Re-run analysis as you collect new data throughout the season
+    """)
+    
+    # Quick start button
+    st.markdown("---")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        if st.button("🚀 Start with Demo Data", type="primary", use_container_width=True):
+            try:
+                df = load_demo_data()
+                st.session_state.data = df
+                st.success("✅ Demo data loaded! Go to the Data Upload page to see your data.")
+                st.rerun()
+            except Exception as e:
+                st.error(f"❌ Error loading demo data: {str(e)}")
 
 def data_upload_page():
     """Data upload and validation page."""
